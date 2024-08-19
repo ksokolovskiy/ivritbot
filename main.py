@@ -79,7 +79,6 @@ async def my_job():
                         await state_with.update_data(verb=verb[0])
                         sq_db.update_timer(str(now))
                     else:
-                        await bot.send_message(i[0], 'Ты не ответил на предыдущее слово. Чтобы получать новые слова, сначала реши с ним.')
                         sq_db.update_timer(str(now))
             else:
                 pass

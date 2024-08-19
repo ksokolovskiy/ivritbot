@@ -1,0 +1,108 @@
+Updates were skipped successfully.
+Goodbye!
+Traceback (most recent call last):
+  File "/root/ivrit/main.py", line 367, in <module>
+    executor.start_polling(dp, on_startup=on_starup, skip_updates=True)
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/utils/executor.py", line 45, in start_polling
+    executor.start_polling(
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/utils/executor.py", line 320, in start_polling
+    loop.run_until_complete(self._startup_polling())
+  File "/usr/lib/python3.10/asyncio/base_events.py", line 649, in run_until_complete
+    return future.result()
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/utils/executor.py", line 372, in _startup_polling
+    await self._welcome()
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/utils/executor.py", line 361, in _welcome
+    user = await self.dispatcher.bot.me
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/bot/bot.py", line 30, in me
+    setattr(self, '_me', await self.get_me())
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/bot/bot.py", line 233, in get_me
+    result = await self.request(api.Methods.GET_ME, payload)
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/bot/base.py", line 236, in request
+    return await api.make_request(await self.get_session(), self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/bot/api.py", line 121, in check_result
+    exceptions.Unauthorized.detect(description)
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/utils/exceptions.py", line 141, in detect
+    raise cls(description)
+aiogram.utils.exceptions.Unauthorized: Unauthorized
+Goodbye!
+Traceback (most recent call last):
+  File "/root/ivrit/main.py", line 367, in <module>
+    executor.start_polling(dp, on_startup=on_starup, skip_updates=True)
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/utils/executor.py", line 45, in start_polling
+    executor.start_polling(
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/utils/executor.py", line 320, in start_polling
+    loop.run_until_complete(self._startup_polling())
+  File "/usr/lib/python3.10/asyncio/base_events.py", line 649, in run_until_complete
+    return future.result()
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/utils/executor.py", line 372, in _startup_polling
+    await self._welcome()
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/utils/executor.py", line 361, in _welcome
+    user = await self.dispatcher.bot.me
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/bot/bot.py", line 30, in me
+    setattr(self, '_me', await self.get_me())
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/bot/bot.py", line 233, in get_me
+    result = await self.request(api.Methods.GET_ME, payload)
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/bot/base.py", line 236, in request
+    return await api.make_request(await self.get_session(), self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/bot/api.py", line 121, in check_result
+    exceptions.Unauthorized.detect(description)
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/utils/exceptions.py", line 141, in detect
+    raise cls(description)
+aiogram.utils.exceptions.Unauthorized: Unauthorized
+Updates were skipped successfully.
+Cause exception while getting updates.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/dispatcher/dispatcher.py", line 382, in start_polling
+    updates = await self.bot.get_updates(
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/bot/bot.py", line 110, in get_updates
+    result = await self.request(api.Methods.GET_UPDATES, payload)
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/bot/base.py", line 236, in request
+    return await api.make_request(await self.get_session(), self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/bot/api.py", line 111, in check_result
+    raise exceptions.RetryAfter(parameters.retry_after)
+aiogram.utils.exceptions.RetryAfter: Flood control exceeded. Retry in 5 seconds.
+Cause exception while getting updates.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/dispatcher/dispatcher.py", line 382, in start_polling
+    updates = await self.bot.get_updates(
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/bot/bot.py", line 110, in get_updates
+    result = await self.request(api.Methods.GET_UPDATES, payload)
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/bot/base.py", line 236, in request
+    return await api.make_request(await self.get_session(), self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/bot/api.py", line 128, in check_result
+    raise exceptions.TelegramAPIError(description)
+aiogram.utils.exceptions.TelegramAPIError: Bad Gateway
+Cause exception while getting updates.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/dispatcher/dispatcher.py", line 382, in start_polling
+    updates = await self.bot.get_updates(
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/bot/bot.py", line 110, in get_updates
+    result = await self.request(api.Methods.GET_UPDATES, payload)
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/bot/base.py", line 236, in request
+    return await api.make_request(await self.get_session(), self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/bot/api.py", line 128, in check_result
+    raise exceptions.TelegramAPIError(description)
+aiogram.utils.exceptions.TelegramAPIError: Bad Gateway
+Cause exception while getting updates.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/dispatcher/dispatcher.py", line 382, in start_polling
+    updates = await self.bot.get_updates(
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/bot/bot.py", line 110, in get_updates
+    result = await self.request(api.Methods.GET_UPDATES, payload)
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/bot/base.py", line 236, in request
+    return await api.make_request(await self.get_session(), self.server, self.__token, method, data, files,
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/bot/api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "/usr/local/lib/python3.10/dist-packages/aiogram/bot/api.py", line 128, in check_result
+    raise exceptions.TelegramAPIError(description)
+aiogram.utils.exceptions.TelegramAPIError: Bad Gateway

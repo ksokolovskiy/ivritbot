@@ -90,31 +90,38 @@ async def on_starup(x):
     print('Bot is working!')
     asyncio.create_task(my_job())
 
-async def check_user(id_tg):
+async def check_user(uesrname_tg):
     users = sq_db.get_users()
     users_dict = []
     result = False
     for i in users:
-        users_dict.append(i[0])
-    if str(id_tg) in users_dict:
+        users_dict.append(i[1])
+    if str(uesrname_tg) in users_dict:
         result = True
     return result
 
 @dp.message_handler(commands='start', state='*')
 async def start(message: types.Message):
-    result = await check_user(message.from_user.id)
-    print(result)
+    result = await check_user(message.from_user.username)
     if result:
-        await message.answer('Ошибка, у тебя нет доступа к боту.')
+        access = sq_db.check_acess(message.from_user.username)
+        if access:
+            await message.answer(
+                'Привет, я буду присылать тебе глаголы на русском, в ответ жду от тебя его перевод на Иврит, начнем?'
+                '\nПо умолчанию таймер отправки новых слов - 60 минут, но ты можешь поменять его самостоятельно, отправив мне команду /edit_timer',
+                reply_markup=keyboards.go)
+        else:
+            await message.answer('Ошибка, у тебя нет доступа к боту.')
     else:
         sq_db.add_user(message.from_user.id, message.from_user.username)
-    access = sq_db.check_acess(message.from_user.username)
-    if access:
-        await message.answer(
-            'Привет, я буду присылать тебе глаголы на русском, в ответ жду от тебя его перевод на Иврит, начнем?',
-            reply_markup=keyboards.go)
-    else:
-        await message.answer('Ошибка, у тебя нет доступа к боту.')
+        access = sq_db.check_acess(message.from_user.username)
+        if access:
+            await message.answer(
+                'Привет, я буду присылать тебе глаголы на русском, в ответ жду от тебя его перевод на Иврит, начнем?',
+                reply_markup=keyboards.go)
+        else:
+            await message.answer('Ошибка, у тебя нет доступа к боту.')
+
 
 @dp.message_handler(commands='edit_timer', state='*')
 async def start(message: types.Message, state: FSMContext):
@@ -154,7 +161,7 @@ async def all_message(message: types.Message, state: FSMContext):
         await message.answer('Ошибка, у тебя нет доступа к боту.')
 
 
-@dp.callback_query_handler(text='go')
+@dp.callback_query_handler(text='go', state='*')
 async def go_callback(callback: types.CallbackQuery, state: FSMContext):
     current_state = await state.get_state()
     print(current_state)

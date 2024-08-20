@@ -18,5 +18,4 @@ admin = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton('🔐 Зак
                                              [InlineKeyboardButton('📖 Показать файл со всеми глаголами',
                                                                     callback_data='get_words')],
                                              [InlineKeyboardButton('❌ Удалить существующий глагол', callback_data='del_word')],
-                                             [InlineKeyboardButton('🕰 Поменять интервал таймера', callback_data='edit_timer')],
                                              ])

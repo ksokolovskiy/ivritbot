@@ -1,4 +1,4 @@
-
+import datetime
 import sqlite3
 import time
 import random
@@ -15,6 +15,7 @@ def sql_create():
                 username TEXT,
                 access TEXT,
                 active TEXT,
+                last_time TEXT,
                 stop_keywords TEXT
             )""")
     cur.execute("""CREATE TABLE IF NOT EXISTS verbs (
@@ -29,15 +30,14 @@ def sql_create():
     con.commit()
     cur.close()
     con.close()
-def add_user(username, id_user):
+def add_user(id_user, username):
     con = sqlite3.connect("db_bot.db")
     cur = con.cursor()
-    cur.execute(f"INSERT INTO users VALUES(?,?,?,?,?)",(username, id_user, 'No', 'Yes', ''))
-
+    now = datetime.datetime.now()
+    cur.execute(f"INSERT INTO users VALUES(?,?,?,?,?,?)",(id_user, username, 'No', '60', now, ''))
     con.commit()
     cur.close()
     con.close()
-
 
 
 def get_verbs():
@@ -60,13 +60,7 @@ def get_users():
     return list
 
 
-def deactive_user(user_id):
-    con = sqlite3.connect("db_bot.db")
-    cur = con.cursor()
-    cur.execute(f"UPDATE users SET active = 'No' WHERE id = {user_id}")
-    con.commit()
-    cur.close()
-    con.close()
+
 
 def active_user(user_id):
     con = sqlite3.connect("db_bot.db")
@@ -79,7 +73,7 @@ def active_user(user_id):
 def add_stop_keyword(id_tg, keyword):
     con = sqlite3.connect("db_bot.db")
     cur = con.cursor()
-    list = cur.execute(f"SELECT stop_keywords FROM users WHERE id = {id_tg}").fetchall()
+    list = cur.execute(f"SELECT stop_keywords FROM users WHERE id = ?", (id_tg,)).fetchall()
     list = list[0][0] + ' ' + keyword
     print(list)
     list = cur.execute(f"UPDATE users SET stop_keywords = ? WHERE id = ?", (list, id_tg,))
@@ -98,7 +92,7 @@ def block_user(user_id):
 def white_user(user_id):
     con = sqlite3.connect("db_bot.db")
     cur = con.cursor()
-    cur.execute(f"UPDATE users SET access = 'Yes' WHERE id = {user_id}")
+    cur.execute(f"UPDATE users SET access = 'Yes' WHERE id = ?", (user_id,))
     con.commit()
     cur.close()
     con.close()
@@ -191,15 +185,32 @@ def get_timer():
 def update_timer(now):
     con = sqlite3.connect("db_bot.db")
     cur = con.cursor()
-    cur.execute(f"UPDATE time_step SET last_send = ?", (now,))
+    cur.execute(f"UPDATE users SET last_time = ?", (now,))
     con.commit()
     cur.close()
     con.close()
 
-def update_time_step(step):
+def update_time_step(step, id_tg):
     con = sqlite3.connect("db_bot.db")
     cur = con.cursor()
-    cur.execute(f"UPDATE time_step SET time_step = ?", (step,))
+    cur.execute(f"UPDATE users SET active = ? WHERE id = ?", (str(step), str(id_tg),))
+    con.commit()
+    cur.close()
+    con.close()
+
+def update_time_step_for_user(step):
+    con = sqlite3.connect("db_bot.db")
+    cur = con.cursor()
+    cur.execute(f"UPDATE users SET active = ?", (step,))
+    con.commit()
+    cur.close()
+    con.close()
+
+def add_white_user(username):
+    con = sqlite3.connect("db_bot.db")
+    cur = con.cursor()
+    now = datetime.datetime.now()
+    cur.execute(f"INSERT INTO users VALUES(?,?,?,?,?,?)",('None', username, 'Yes', '60', now, ''))
     con.commit()
     cur.close()
     con.close()

@@ -1,6 +1,6 @@
 version: '3.7'
 services:
   bot:
-    build: ..
+    build: .
     command: sh -c "make migrate && python -m bot"
     restart: always

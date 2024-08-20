@@ -22,7 +22,7 @@ bot = Bot(config.api_token_tg)
 storage = MemoryStorage()
 bot = Bot(token=config.api_token_tg)
 dp = Dispatcher(bot, storage=storage)
-
+sq_db.sql_create()
 class Waiting(StatesGroup):
     waiting_for_translate = State()
 
@@ -50,15 +50,17 @@ class waiting_edit_timer(StatesGroup):
 async def my_job():
     while True:
         users = sq_db.get_users()
-        list = sq_db.get_timer()
-        interval = list[0][0]
-        last_time = list[0][1]
         now = datetime.datetime.now()
-        text = str(last_time)
-        last_time = now - datetime.timedelta(minutes=int(interval))
-        result = datetime.datetime.strptime(text, '%Y-%m-%d %H:%M:%S.%f')
-        if last_time >= result:
-            for i in users:
+        for i in users:
+            interval = i[3]
+            last_time = i[4]
+            text = str(last_time)
+            last_time = now - datetime.timedelta(minutes=int(interval))
+            result = datetime.datetime.strptime(text, '%Y-%m-%d %H:%M:%S.%f')
+            print(last_time)
+            print(result)
+            print(interval)
+            if last_time >= result:
                 state_with: FSMContext = dp.current_state(chat=i[0], user=i[0])
                 current_state = await state_with.get_state()
                 access = sq_db.check_acess(i[1])
@@ -66,7 +68,6 @@ async def my_job():
                     if current_state is None:
                         verbs = sq_db.get_verbs()
                         verb = random.choice(verbs)
-                        print(verb)
                         verb_inf = random.randint(1, 2)
                         if verb_inf == 1:
                             verb_inf_string = ' (инфинитив)'
@@ -80,28 +81,33 @@ async def my_job():
                         sq_db.update_timer(str(now))
                     else:
                         sq_db.update_timer(str(now))
-            else:
-                pass
-        await asyncio.sleep(10)
+                else:
+                    pass
+        await asyncio.sleep(60)
 
 
 async def on_starup(x):
     print('Bot is working!')
     asyncio.create_task(my_job())
 
-
-@dp.message_handler(commands='test', state='*')
-async def test(message: types.Message):
-    state_with: FSMContext = dp.current_state(chat=message.chat.id, user=message.from_user.id)
-    current_state = await state_with.get_state()
-    print(current_state)
+async def check_user(id_tg):
+    users = sq_db.get_users()
+    users_dict = []
+    result = False
+    for i in users:
+        users_dict.append(i[0])
+    if str(id_tg) in users_dict:
+        result = True
+    return result
 
 @dp.message_handler(commands='start', state='*')
 async def start(message: types.Message):
-    try:
+    result = await check_user(message.from_user.id)
+    print(result)
+    if result:
+        await message.answer('Ошибка, у тебя нет доступа к боту.')
+    else:
         sq_db.add_user(message.from_user.id, message.from_user.username)
-    except Exception as e:
-        print(e)
     access = sq_db.check_acess(message.from_user.username)
     if access:
         await message.answer(
@@ -110,6 +116,15 @@ async def start(message: types.Message):
     else:
         await message.answer('Ошибка, у тебя нет доступа к боту.')
 
+@dp.message_handler(commands='edit_timer', state='*')
+async def start(message: types.Message, state: FSMContext):
+    users = sq_db.get_users()
+    timer = ''
+    for i in users:
+        if int(i[0]) == message.from_user.id:
+            timer = i[3]
+    await message.answer(f'Введи количество минут для таймера отправки новых слов. Интервал сейчас: {timer}')
+    await state.set_state(waiting_edit_timer.waiting_for_time_step)
 
 
 @dp.message_handler(state=Waiting.waiting_for_translate)
@@ -255,7 +270,8 @@ async def block_user(message: types.Message, state: FSMContext):
             white_user_id = i[0]
             print(white_user_id)
     if white_user_id == 0:
-        await message.answer('Ошибка, пользователь не найден.')
+        sq_db.add_white_user(username_user)
+        await message.answer('Пользователь успешно разблокирован.')
         await state.finish()
     else:
         sq_db.white_user(white_user_id)
@@ -334,11 +350,6 @@ async def delete_word_2(message: types.Message, state: FSMContext):
         await message.answer('Ошибка, такого слова нет в словаре.')
 
 
-@dp.callback_query_handler(text='edit_timer', state='*')
-async def go_callback(callback: types.CallbackQuery, state: FSMContext):
-    timer = sq_db.get_timer()
-    await callback.message.answer(f'Введи количество минут для таймера отправки новых слов. Интервал сейчас: {timer[0][0]}')
-    await state.set_state(waiting_edit_timer.waiting_for_time_step)
 
 
 def is_int(str):
@@ -354,7 +365,7 @@ async def edit_timer(message: types.Message, state: FSMContext):
     step = message.text
     step_int = is_int(step)
     if step_int:
-        sq_db.update_time_step(int(step))
+        sq_db.update_time_step(int(step), message.from_user.id)
         await message.answer('Таймер успешно изменен')
     else:
         'Ошибка. Ты ввел не число.'

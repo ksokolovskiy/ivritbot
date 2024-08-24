@@ -2,5 +2,7 @@ version: '3.7'
 services:
   bot:
     build: .
-    command: sh -c "python -m main"
-    restart: always
+    restart: unless-stopped
+    volumes:
+      - ./base_data/db_bot.db:/app/base_data/db_bot.db
+      - ./data:/base_data

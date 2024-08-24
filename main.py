@@ -111,7 +111,7 @@ async def start(message: types.Message):
                 '\nПо умолчанию таймер отправки новых слов - 60 минут, но ты можешь поменять его самостоятельно, отправив мне команду /edit_timer',
                 reply_markup=keyboards.go)
         else:
-            await message.answer('Ошибка, у тебя нет доступа к боту.')
+            await message.answer('Ошибка, у тебя нет доступа к боту.1')
     else:
         sq_db.add_user(message.from_user.id, message.from_user.username)
         access = sq_db.check_acess(message.from_user.username)
@@ -120,7 +120,7 @@ async def start(message: types.Message):
                 'Привет, я буду присылать тебе глаголы на русском, в ответ жду от тебя его перевод на Иврит, начнем?',
                 reply_markup=keyboards.go)
         else:
-            await message.answer('Ошибка, у тебя нет доступа к боту.')
+            await message.answer('Ошибка, у тебя нет доступа к боту.2')
 
 
 @dp.message_handler(commands='edit_timer', state='*')
@@ -158,7 +158,7 @@ async def all_message(message: types.Message, state: FSMContext):
             else:
                 await message.answer('Не правильно :( Попробуй еще.')
     else:
-        await message.answer('Ошибка, у тебя нет доступа к боту.')
+        await message.answer('Ошибка, у тебя нет доступа к боту.3')
 
 
 @dp.callback_query_handler(text='go', state='*')
@@ -206,7 +206,7 @@ async def start(message: types.Message, state: FSMContext):
         else:
             await message.answer('Ошибка, сначала дай ответ на предыдущее слово.')
     else:
-        await message.answer('Ошибка, у тебя нет доступа к боту.')
+        await message.answer('Ошибка, у тебя нет доступа к боту.4')
 
 @dp.callback_query_handler(text='no_keywords', state='*')
 async def go_callback(callback: types.CallbackQuery, state: FSMContext):

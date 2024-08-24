@@ -9,7 +9,7 @@ from contextlib import contextmanager
 
 @contextmanager
 def get_db_connection():
-    con = sqlite3.connect("db_bot.db")
+    con = sqlite3.connect("./base_data/db_bot.db")
     con.execute('pragma journal_mode=wal')
     try:
         yield con

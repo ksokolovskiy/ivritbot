@@ -28,8 +28,8 @@ def sql_create():
     with get_db_connection() as con:
         cur = con.cursor()
         cur.execute("""CREATE TABLE IF NOT EXISTS users (
-                    id TEXT PRIMARY KEY,
-                    username TEXT,
+                    id TEXT,
+                    username TEXT PRIMARY KEY,
                     access TEXT,
                     active TEXT,
                     last_time TEXT,
@@ -46,11 +46,11 @@ def sql_create():
                     )""")
         cur.close()
 
-def add_user(id_user, username):
+def add_user(username):
     with get_db_connection() as con:
         cur = con.cursor()
         now = datetime.datetime.now()
-        cur.execute(f"INSERT INTO users VALUES(?,?,?,?,?,?)",(id_user, username, 'No', '60', now, ''))
+        cur.execute(f"INSERT INTO users VALUES(?,?,?,?,?,?)",('',username, 'No', '60', now, ''))
         cur.close()
 
 def get_verbs():
@@ -67,31 +67,31 @@ def get_users():
         cur.close()
         return list
 
-def active_user(user_id):
+def active_user(user_name):
     with get_db_connection() as con:
         cur = con.cursor()
-        cur.execute(f"UPDATE users SET active = 'Yes' WHERE id = ?", (user_id,))
+        cur.execute(f"UPDATE users SET active = 'Yes' WHERE username = ?", (user_name,))
         cur.close()
 
-def add_stop_keyword(id_tg, keyword):
+def add_stop_keyword(name_tg, keyword):
     with get_db_connection() as con:
         cur = con.cursor()
-        list = cur.execute(f"SELECT stop_keywords FROM users WHERE id = ?", (id_tg,)).fetchall()
+        list = cur.execute(f"SELECT stop_keywords FROM users WHERE username = ?", (name_tg,)).fetchall()
         list = list[0][0] + ' ' + keyword
         print(list)
-        cur.execute(f"UPDATE users SET stop_keywords = ? WHERE id = ?", (list, id_tg,))
+        cur.execute(f"UPDATE users SET stop_keywords = ? WHERE username = ?", (list, name_tg,))
         cur.close()
 
-def block_user(user_id):
+def block_user(user_name):
     with get_db_connection() as con:
         cur = con.cursor()
-        cur.execute(f"UPDATE users SET access = 'No' WHERE id = {user_id}")
+        cur.execute(f"UPDATE users SET access = 'No' WHERE username = {user_name}")
         cur.close()
 
-def white_user(user_id):
+def white_user(user_name):
     with get_db_connection() as con:
         cur = con.cursor()
-        cur.execute(f"UPDATE users SET access = 'Yes' WHERE id = ?", (user_id,))
+        cur.execute(f"UPDATE users SET access = 'Yes' WHERE username = ?", (user_name,))
         cur.close()
 
 def add_verb(russian, infin, infin_man):
@@ -151,12 +151,14 @@ def del_word(word):
                 save_db.to_sql(name='verbs', con=con, if_exists='replace', index=False)
         return status
 
-def check_acess(username):
+def check_acсess(username, id=None):
     with get_db_connection() as con:
         cur = con.cursor()
         list = cur.execute(f"SELECT access FROM users WHERE username = ?", (username,)).fetchall()
         print(list[0][0])
         access = list[0][0] == 'Yes'
+        if id is not None:
+            cur.execute(f"UPDATE users SET id = ? WHERE username = ?", (id, username,))
         cur.close()
         return access
 
@@ -173,10 +175,10 @@ def update_timer(now):
         cur.execute(f"UPDATE users SET last_time = ?", (now,))
         cur.close()
 
-def update_time_step(step, id_tg):
+def update_time_step(step, name_tg):
     with get_db_connection() as con:
         cur = con.cursor()
-        cur.execute(f"UPDATE users SET active = ? WHERE id = ?", (str(step), str(id_tg),))
+        cur.execute(f"UPDATE users SET active = ? WHERE username = ?", (str(step), str(name_tg),))
         cur.close()
 
 def update_time_step_for_user(step):
@@ -189,5 +191,5 @@ def add_white_user(username):
     with get_db_connection() as con:
         cur = con.cursor()
         now = datetime.datetime.now()
-        cur.execute(f"INSERT INTO users VALUES(?,?,?,?,?,?)",('None', username, 'Yes', '60', now, ''))
+        cur.execute(f"INSERT INTO users VALUES(?,?,?,?,?,?)",('',username, 'Yes', '60', now, ''))
         cur.close()

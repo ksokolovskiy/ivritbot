@@ -63,7 +63,7 @@ async def my_job():
             if last_time >= result:
                 state_with: FSMContext = dp.current_state(chat=i[0], user=i[0])
                 current_state = await state_with.get_state()
-                access = sq_db.check_acess(i[1])
+                access = sq_db.check_acсess(i[1])
                 if access:
                     if current_state is None:
                         verbs = sq_db.get_verbs()
@@ -104,7 +104,7 @@ async def check_user(uesrname_tg):
 async def start(message: types.Message):
     result = await check_user(message.from_user.username)
     if result:
-        access = sq_db.check_acess(message.from_user.username)
+        access = sq_db.check_acсess(message.from_user.username, message.from_user.id)
         if access:
             await message.answer(
                 'Привет, я буду присылать тебе глаголы на русском, в ответ жду от тебя его перевод на Иврит, начнем?'
@@ -113,8 +113,8 @@ async def start(message: types.Message):
         else:
             await message.answer('Ошибка, у тебя нет доступа к боту.1')
     else:
-        sq_db.add_user(message.from_user.id, message.from_user.username)
-        access = sq_db.check_acess(message.from_user.username)
+        sq_db.add_user(message.from_user.username, message.from_user.id)
+        access = sq_db.check_acсess(message.from_user.username)
         if access:
             await message.answer(
                 'Привет, я буду присылать тебе глаголы на русском, в ответ жду от тебя его перевод на Иврит, начнем?',
@@ -128,7 +128,7 @@ async def start(message: types.Message, state: FSMContext):
     users = sq_db.get_users()
     timer = ''
     for i in users:
-        if int(i[0]) == message.from_user.id:
+        if int(i[0]) == message.from_user.username:
             timer = i[3]
     await message.answer(f'Введи количество минут для таймера отправки новых слов. Интервал сейчас: {timer}')
     await state.set_state(waiting_edit_timer.waiting_for_time_step)
@@ -136,7 +136,7 @@ async def start(message: types.Message, state: FSMContext):
 
 @dp.message_handler(state=Waiting.waiting_for_translate)
 async def all_message(message: types.Message, state: FSMContext):
-    access = sq_db.check_acess(message.from_user.username)
+    access = sq_db.check_acсess(message.from_user.username)
     if access:
         if message.text == '/keyword':
             await message.answer('Сначала дай ответ на предыдущее слово')
@@ -185,7 +185,7 @@ async def go_callback(callback: types.CallbackQuery, state: FSMContext):
 
 @dp.message_handler(commands='keyword', state='*')
 async def start(message: types.Message, state: FSMContext):
-    access = sq_db.check_acess(message.from_user.username)
+    access = sq_db.check_acсess(message.from_user.username)
     if access:
         current_state = await state.get_state()
         print(current_state)
@@ -211,7 +211,7 @@ async def start(message: types.Message, state: FSMContext):
 @dp.callback_query_handler(text='no_keywords', state='*')
 async def go_callback(callback: types.CallbackQuery, state: FSMContext):
     text = callback.message.text.partition(' (')[0]
-    sq_db.add_stop_keyword(callback.from_user.id, text)
+    sq_db.add_stop_keyword(callback.from_user.username, text)
     await callback.message.edit_reply_markup()
     await callback.message.answer('Хорошо, слово добавлено в исключение. Больше его показывать не буду.')
     await state.finish()
@@ -372,7 +372,7 @@ async def edit_timer(message: types.Message, state: FSMContext):
     step = message.text
     step_int = is_int(step)
     if step_int:
-        sq_db.update_time_step(int(step), message.from_user.id)
+        sq_db.update_time_step(int(step), message.from_user.username)
         await message.answer('Таймер успешно изменен')
     else:
         'Ошибка. Ты ввел не число.'
